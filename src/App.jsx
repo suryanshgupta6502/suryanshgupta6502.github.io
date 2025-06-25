@@ -1,13 +1,10 @@
 import { Canvas } from '@react-three/fiber'
-import React from 'react'
+import Exp from './Exp'
 
 export default function App() {
   return (
     <Canvas>
-        <mesh>
-            <boxGeometry/>
-            <meshNormalMaterial/>
-        </mesh>
+      <Exp />
     </Canvas>
   )
 }
