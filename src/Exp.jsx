@@ -330,7 +330,9 @@ varying vec2 vUv;
 
 // Simple pseudo-random noise
 float random(vec2 st) {
-return fract(sin(dot(st.xy + uTime, vec2(12.9898,78.233))) * 4375.5453);
+return fract(sin(dot(st.xy , vec2(12.9898,78.233))) * 4375.5453);
+// return fract(sin(dot(st.xy + uTime, vec2(12.9898,78.233))) * 4375.5453);
+
 }
 
 vec2 rotate(vec2 uv, float th) {
@@ -359,10 +361,10 @@ void main() {
 vec4 color = texture2D(uImage, vUv);
 
 // Grain: subtle, random noise overlay
-float grain = random(vUv * uTime *1.2) * 0.2; // adjust intensity
+float grain = random(vUv  *1.5) *.3; // adjust intensity
 
 float neuro = neuro_shape(vUv, 3., 5.);
-// cout
+
 
  // Convert RGB to grayscale (luminance method)
   float gray = dot(color.rgb,vec3(0.0,0.0,1.0));
@@ -377,8 +379,10 @@ color.rgb*=mixed;
 
 // * (neuro+vec3(0.8,0.9,.5))
 
+gl_FragColor = vec4(color.rgb * (neuro+vec3(0.8,0.9,.5)) +grain,color.a);
+
 gl_FragColor = vec4(color.rgb * (neuro+vec3(0.8,0.9,.5)) +(grain),color.a);
-// gl_FragColor = vec4(mixed,1.,color.a);
+
 
 }
 `
@@ -479,13 +483,30 @@ function Plane({ pos, img, heading, discription, link, reff }) {
     const subtextFontSize = 0.1;
     const lineSpacing = 0.05; // optional gap between lines
 
+    const edgesRef = useRef()
 
 
     return (
-        <mesh position={pos}  >
-            <RoundedBoxGeometry attach="geometry" args={[cardwidth, cardheight, 0.001]} radius={.02} steps={0} />
+        <mesh position={pos}
+            onPointerOver={(e) => {
+                // if (edgesRef.current) edgesRef.current.visible = true
+                // e.eventObject.children[0].visible = true
+                // console.log(e.eventObject.children[0].material);
+            }}
+            onPointerLeave={(e) => {
+                // e.eventObject.children[0].visible = false
+                // console.log(e.eventObject.children[0].visible);
+            }}
+        >
+
+            <RoundedBoxGeometry args={[cardwidth, cardheight, 0.01]} radius={.02} steps={0} />
+
             <meshStandardMaterial color="white" />
-            <Edges color={"black"} />
+
+            <Edges gapSize={.1} lineWidth={.3} count={10} ref={edgesRef} name='line' color={"black"} />
+
+
+
             {/* <Outlines thickness={.01} color={'#111'} /> */}
 
 
@@ -550,7 +571,7 @@ function Plane({ pos, img, heading, discription, link, reff }) {
                 {/* {discription} */}
             </Text>
 
-            <Text color={"white"} strokeWidth={.005} strokeColor={"black"} onClick={(e) => window.open(link, '_blank')} position-z={.01} fontStyle='italic' anchorX={"left"} fontSize={.1} position-x={cardwidth / 2.7} position-y={-.8}>
+            <Text color={"white"} strokeWidth={.002} strokeColor={"black"} onClick={(e) => window.open(link, '_blank')} position-z={.01} fontStyle='italic' anchorX={"left"} fontSize={.1} position-x={cardwidth / 2.7} position-y={-.8}>
                 ↗
             </Text>
 
@@ -651,7 +672,17 @@ export default function Exp() {
 
             <axesHelper />
             <ambientLight args={['white', 10]} />
-            <OrbitControls target={ [0, 1, 0]} enableRotate={false} enableZoom={false} />
+            <OrbitControls
+                onStart={(e) => {
+                    e.target.mouseButtons.RIGHT = 0
+                    e.target.mouseButtons.LEFT = 2
+                    console.log(e.target);
+                }}
+                target={[0, 1, 0]}
+            // enableRotate={false}
+            // enableZoom={false}
+            maxDistance={3}
+            />
 
             {/* <Selection> */}
 
