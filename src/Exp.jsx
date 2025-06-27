@@ -647,7 +647,7 @@ export default function Exp() {
 
     // const total_width_ofgroup = 14
     const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
-    // const total_width_ofgroup = (arr.length + 1) * (cardwidth + gap)
+    // const total_width_ofgroup = ((arr.length + 1) * (cardwidth + gap)) 
     console.log(total_width_ofgroup);
 
     // ((arr.length - cardheight - gap) * cardwidth + gap) / 2
@@ -702,9 +702,9 @@ export default function Exp() {
                     // console.log(rangex, current.x, rangex - total_width_ofgroup / 2);
 
                     // console.log(current.x, rangex, (rangex - (total_width_ofgroup / 2)))
-                    console.log(rangex, current.x);
+                    console.log(currentcard, (rangex - total_width_ofgroup + 2), current.x);
                     if ((current.x > rangex)) {
-                        // console.log("right");
+                        console.log("right");
 
 
                         // console.log(cardgroups);
@@ -721,9 +721,6 @@ export default function Exp() {
 
                         // }
 
-                        cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
-                        rangex += (total_width_ofgroup + 2)
-
                         // cardgroups[currentcard.current].current.position.x += currentcard.current == 0 ? (total_width_ofgroup) : (total_width_ofgroup * 2)
                         // cardgroup2.current.position.x += total_width_ofgroup
 
@@ -731,14 +728,37 @@ export default function Exp() {
                         // console.log(rangex, "going right");
 
                         // setOverflow(true)
+
+
+                        cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
+                        rangex += (total_width_ofgroup)
+
+
                         currentcard.current = (currentcard.current + 1) % 2
+
+
+                        // final
+                        // cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
+                        // rangex += (total_width_ofgroup+2)
+                        // currentcard.current = (currentcard.current + 1) % 2
 
                     }
 
-                    else if (current.x < (rangex - total_width_ofgroup)) {
-                        // console.log("left");
+                    else if (current.x < (rangex - total_width_ofgroup + 2)) {
+                        console.log("left");
 
 
+                        currentcard.current = (currentcard.current + 1) % 2
+
+                        cardgroups[currentcard.current].current.position.x -= (total_width_ofgroup * 2)
+                        rangex -= (total_width_ofgroup)
+
+
+
+                        // final
+                        // currentcard.current = (currentcard.current + 1) % 2
+                        // cardgroups[currentcard.current].current.position.x -= (total_width_ofgroup * 2)
+                        // rangex -= (total_width_ofgroup+2)
 
 
                         // cardgroup2.current.position.x -= (total_width_ofgroup)
@@ -806,7 +826,7 @@ export default function Exp() {
 
                         < Plane key={index}
 
-                            pos={[(index * gap) + total_width_ofgroup, cardheight / 2 + 1, 0]}
+                            pos={[(index * gap) + total_width_ofgroup, cardheight / 2, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
 
                             img={each[0]}
