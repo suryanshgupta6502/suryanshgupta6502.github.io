@@ -1,6 +1,6 @@
 import { Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
 import React, { useRef, useState } from 'react'
-import { AdditiveBlending, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, Vector2 } from 'three';
+import { AdditiveBlending, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2 } from 'three';
 import { geometry, three } from 'maath'
 import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { ChromaticAberration, EffectComposer, Noise, Outline, Scanline, Vignette } from '@react-three/postprocessing';
@@ -690,7 +690,9 @@ export default function Exp() {
 
             <axesHelper />
             <ambientLight args={['white', 10]} />
-            <OrbitControls mouseButtons={{ LEFT: 2, RIGHT: 0 }}
+            <OrbitControls
+                mouseButtons={{ LEFT: 2, RIGHT: 0 }}
+                touches={{ ONE: TOUCH.PAN }}
                 target={[0, 1, 0]}
                 // enableRotate={false}
                 // enableZoom={false}
