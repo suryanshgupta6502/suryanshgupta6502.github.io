@@ -643,7 +643,7 @@ export default function Exp() {
     const cardgroup1 = useRef()
     const cardgroup2 = useRef()
 
-    const cardgroups = [cardgroup2, cardgroup1]
+    const cardgroups = [cardgroup1, cardgroup2]
 
     const total_width_ofgroup = 14
     // const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
@@ -670,6 +670,8 @@ export default function Exp() {
 
     // const [currentcard, setcurrentcard] = useState(0)
     const currentcard = useRef(0)
+
+
     return (
         <>
 
@@ -696,21 +698,34 @@ export default function Exp() {
                     // console.log(rangex, current.x, rangex - total_width_ofgroup / 2);
 
                     // console.log(current.x, rangex, (rangex - (total_width_ofgroup / 2)))
-                    console.log(currentcard, current.x, rangex);
+                    console.log(rangex, cardgroups[0].current.position);
                     if ((current.x > rangex)) {
 
                         // console.log(cardgroups);
 
 
+                        // if (currentcard.current == 0) {
+                        //     cardgroups[currentcard.current].current.position.x += (total_width_ofgroup)
+                        //     rangex += (total_width_ofgroup )
 
+                        // }
+                        // else {
+                        //     cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
+                        //     rangex += (total_width_ofgroup * 2)
 
+                        // }
+
+                        cardgroups[currentcard.current].current.position.x += (total_width_ofgroup) * 2
+                        rangex += (total_width_ofgroup) * 2
+
+                        // cardgroups[currentcard.current].current.position.x += currentcard.current == 0 ? (total_width_ofgroup) : (total_width_ofgroup * 2)
                         // cardgroup2.current.position.x += total_width_ofgroup
-                        currentcard.current = (currentcard.current + 1 % 2)
 
-                        rangex += total_width_ofgroup
+                        // rangex += (total_width_ofgroup * 2)
                         // console.log(rangex, "going right");
 
                         // setOverflow(true)
+                        currentcard.current = (currentcard.current + 1) % 2
 
                     }
 
@@ -721,7 +736,7 @@ export default function Exp() {
                         // cardgroupref.current.position.x -= (total_width_ofgroup)
 
 
-                        rangex -= total_width_ofgroup
+                        // rangex -= total_width_ofgroup
                         // rangex -= total_width_ofgroup
 
 
@@ -729,6 +744,18 @@ export default function Exp() {
 
                         // rangex = current.x
                         // setOverflow(true)
+
+                        // cardgroups[currentcard.current].current.position.x -= (total_width_ofgroup) 
+                        // rangex -= (total_width_ofgroup) 
+
+                        // cardgroups[currentcard.current].current.position.x += currentcard.current == 0 ? (total_width_ofgroup) : (total_width_ofgroup * 2)
+                        // cardgroup2.current.position.x += total_width_ofgroup
+
+                        // rangex += (total_width_ofgroup * 2)
+                        // console.log(rangex, "going right");
+
+                        // setOverflow(true)
+                        currentcard.current = (currentcard.current + 1) % 2
 
 
                     }
@@ -748,7 +775,9 @@ export default function Exp() {
 
                         < Plane key={index}
 
-                            pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            pos={[index * gap, cardheight / 2, 0]}
+                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
+
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
@@ -768,7 +797,9 @@ export default function Exp() {
 
                         < Plane key={index}
 
-                            pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            pos={[index * gap + total_width_ofgroup, cardheight / 2 + 1, 0]}
+                            // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
+
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
