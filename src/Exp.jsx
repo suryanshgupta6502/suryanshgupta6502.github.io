@@ -692,9 +692,9 @@ export default function Exp() {
             <ambientLight args={['white', 10]} />
             <OrbitControls
                 mouseButtons={{ LEFT: 2, RIGHT: 0 }}
-                touches={{ ONE: TOUCH.PAN }}
+                touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_PAN }}
                 target={[0, 1, 0]}
-                // enableRotate={false}
+                enableRotate={false}
                 // enableZoom={false}
                 // maxDistance={3}
                 onChange={(e) => {
