@@ -1,8 +1,8 @@
 import { Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { AdditiveBlending, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, Vector2 } from 'three';
 import { geometry, three } from 'maath'
-import { extend, useFrame, useLoader } from '@react-three/fiber';
+import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { ChromaticAberration, EffectComposer, Noise, Outline, Scanline, Vignette } from '@react-three/postprocessing';
 // import { RoundedPlaneGeometry } from 'maath/dist/declarations/src/geometry';
 // imp
@@ -372,14 +372,14 @@ float neuro = neuro_shape(vUv, 3., 5.);
 
  vec3 mixed = mix(color.rgb, vec3(gray),1.);
 
-color.rgb*=mixed;
-
-// vec3(0.749,0.953,1.)
-// vec3(1,.7,0.1)
-
-// * (neuro+vec3(0.8,0.9,.5))
-
-gl_FragColor = vec4(color.rgb * (neuro+vec3(0.8,0.9,.5)) +grain,color.a);
+ 
+ // vec3(0.749,0.953,1.)
+ // vec3(1,.7,0.1)
+ 
+ // * (neuro+vec3(0.8,0.9,.5))
+ 
+ color.rgb*=mixed;
+// gl_FragColor = vec4(color.rgb * (vec3(0.8,0.8,.7)) +(grain) ,color.a);
 
 gl_FragColor = vec4(color.rgb * (neuro+vec3(0.8,0.9,.5)) +(grain),color.a);
 
@@ -488,13 +488,16 @@ function Plane({ pos, img, heading, discription, link, reff }) {
 
     return (
         <mesh position={pos}
+
             onPointerOver={(e) => {
                 // if (edgesRef.current) edgesRef.current.visible = true
                 // e.eventObject.children[0].visible = true
-                // console.log(e.eventObject.children[0].material);
+                e.eventObject.children[0].material.linewidth = 0.3
+                // console.log(e.eventObject.children[0]);
             }}
             onPointerLeave={(e) => {
                 // e.eventObject.children[0].visible = false
+                e.eventObject.children[0].material.linewidth = 0
                 // console.log(e.eventObject.children[0].visible);
             }}
         >
@@ -503,7 +506,7 @@ function Plane({ pos, img, heading, discription, link, reff }) {
 
             <meshStandardMaterial color="white" />
 
-            <Edges gapSize={.1} lineWidth={.3} count={10} ref={edgesRef} name='line' color={"black"} />
+            <Edges gapSize={.1} lineWidth={0} count={10} ref={edgesRef} name='line' color={"black"} />
 
 
 
@@ -573,6 +576,7 @@ function Plane({ pos, img, heading, discription, link, reff }) {
 
             <Text color={"white"} strokeWidth={.002} strokeColor={"black"} onClick={(e) => window.open(link, '_blank')} position-z={.01} fontStyle='italic' anchorX={"left"} fontSize={.1} position-x={cardwidth / 2.7} position-y={-.8}>
                 ↗
+                {/* <meshBasicMaterial  /> */}
             </Text>
 
 
@@ -589,27 +593,6 @@ function Plane({ pos, img, heading, discription, link, reff }) {
             // uniforms={{ uImage: texture }}
             // uniforms-uImage-value={texture}
             /> */}
-
-            {/* <meshBasicMaterial color="white" side={DoubleSide} /> */}
-            {/* <meshNormalMaterial side={DoubleSide} /> */}
-            {/* <Outlines thickness={20} color="red" /> */}
-            {/* <Outlines angle={0} thickness={1.1} color="black" /> */}
-
-
-            {/* <mesh castShadow receiveShadow onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} >
-                <torusKnotGeometry args={[0.5, 0.15, 128, 128]} />
-                <meshStandardMaterial />
-                {true && <Outlines thickness={1} color={true ? 'aquamarine' : "red"} />}
-            </mesh> */}
-
-
-            {/* <mesh scale={10}>
-                <planeGeometry />
-                <meshBasicMaterial />
-                <Outlines angle={0} thickness={20} color="black" />
-            </mesh> */}
-
-            {/* <Edges color={"black"} /> */}
 
         </mesh >
     )
@@ -628,14 +611,18 @@ export default function Exp() {
     // const total = 5
 
     const arr = [
-        ["1.jpg", "world", "disp", "https://www.link2.com"],
-        ["2.png", "31", "disp", "https://www.link3.com"],
-        ["1.jpg", "hello", "disp", "https://www.link1.com"],
+        ["1.jpg", "flowers", "disp", "https://www.link2.com"],
+        ["2.png", "scene", "disp", "https://www.link3.com"],
+        ["1.jpg", "flowers", "disp", "https://www.link1.com"],
 
-        ["artistic-scene-inspired-by-art-nouveau-style-with-colorful-depictions.jpg", "hello", "disp", "https://www.link1.com"],
-        ["stemp1.vercel.app_ (1).png", "hello", "disp", "https://www.link1.com"],
-        ["stemp1.vercel.app_ (2).png", "hello", "disp", "https://www.link1.com"],
-        ["stemp1.vercel.app_.png", "hello", "disp", "https://www.link1.com"],
+        ["artistic-scene-inspired-by-art-nouveau-style-with-colorful-depictions.jpg",
+            "tiger", "disp", "https://www.link1.com"],
+        ["stemp1.vercel.app_ (1).png",
+            "scene", "disp", "https://www.link1.com"],
+        ["stemp1.vercel.app_ (2).png",
+            "scene", "disp", "https://www.link1.com"],
+        ["stemp1.vercel.app_.png",
+            "scene", "disp", "https://www.link1.com"],
 
 
 
@@ -650,12 +637,39 @@ export default function Exp() {
 
     const middle = Math.floor(arr.length / 2)
 
-    // Array.from({ length: total })
 
-    const meshRef = useRef()
-    const cardref = useRef()
+    // console.log(((arr.length - 1) * cardwidth + gap) / 2);
+
+    const cardgroup1 = useRef()
+    const cardgroup2 = useRef()
+
+    const cardgroups = [cardgroup2, cardgroup1]
+
+    const total_width_ofgroup = 14
+    // const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
+
+    // ((arr.length - cardheight - gap) * cardwidth + gap) / 2
+    let rangex = total_width_ofgroup / 4
 
 
+
+    // console.log(total_width_ofgroup, rangex, total_width_ofgroup / 4);
+
+
+    // useFrame((e) => {
+    //     // console.log(e);
+
+
+
+    // })
+
+    const { scene } = useThree()
+
+
+    const [overflow, setOverflow] = useState(false)
+
+    // const [currentcard, setcurrentcard] = useState(0)
+    const currentcard = useRef(0)
     return (
         <>
 
@@ -672,64 +686,119 @@ export default function Exp() {
 
             <axesHelper />
             <ambientLight args={['white', 10]} />
-            <OrbitControls
-                onStart={(e) => {
-                    e.target.mouseButtons.RIGHT = 0
-                    e.target.mouseButtons.LEFT = 2
-                    console.log(e.target);
-                }}
+            <OrbitControls mouseButtons={{ LEFT: 2, RIGHT: 0 }}
                 target={[0, 1, 0]}
-            // enableRotate={false}
-            // enableZoom={false}
-            maxDistance={3}
+                // enableRotate={false}
+                // enableZoom={false}
+                // maxDistance={3}
+                onChange={(e) => {
+                    const current = e.target.target
+                    // console.log(rangex, current.x, rangex - total_width_ofgroup / 2);
+
+                    // console.log(current.x, rangex, (rangex - (total_width_ofgroup / 2)))
+                    console.log(currentcard, current.x, rangex);
+                    if ((current.x > rangex)) {
+
+                        // console.log(cardgroups);
+
+
+
+
+                        // cardgroup2.current.position.x += total_width_ofgroup
+                        currentcard.current = (currentcard.current + 1 % 2)
+
+                        rangex += total_width_ofgroup
+                        // console.log(rangex, "going right");
+
+                        // setOverflow(true)
+
+                    }
+
+                    else if (current.x < (rangex - (total_width_ofgroup))) {
+
+
+                        // cardgroup2.current.position.x -= (total_width_ofgroup)
+                        // cardgroupref.current.position.x -= (total_width_ofgroup)
+
+
+                        rangex -= total_width_ofgroup
+                        // rangex -= total_width_ofgroup
+
+
+                        // console.log(rangex, "going left");
+
+                        // rangex = current.x
+                        // setOverflow(true)
+
+
+                    }
+
+
+
+                    // console.log(e.target.target)
+                }}
+
             />
 
-            {/* <Selection> */}
+
+            <group ref={cardgroup1} >
+                {
+                    arr.map((each, index) =>
+                        // console.log(each[0])
+
+                        < Plane key={index}
+
+                            pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            img={each[0]}
+                            heading={each[1]}
+                            discription={each[2]}
+                            link={each[3]}
+                        />
+                    )
+                }
+            </group>
 
 
-            {/* <mesh castShadow receiveShadow onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} >
-                <boxGeometry />
-                <meshStandardMaterial />
-                {true && <Outlines thickness={1} color={true ? 'aquamarine' : "red"} />}
-            </mesh> */}
-
-            {/* <mesh castShadow receiveShadow onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} >
-                <torusKnotGeometry args={[0.5, 0.15, 128, 128]} />
-                <meshStandardMaterial />
-                {true && <Outlines thickness={1} color={true ? 'aquamarine' : "red"} />}
-            </mesh> */}
 
 
-            {/* </Selection> */}
-            {/* <EffectComposer multisampling={8} autoClear={false}>
-                <Outline
-                    selection={[meshRef, cardref]}
-                    edgeStrength={10}
-                    visibleEdgeColor="black"
-                // hiddenEdgeColor="gray"
-                />
-            </EffectComposer> */}
+            <group ref={cardgroup2} >
+                {true &&
+                    arr.map((each, index) =>
+                        // console.log(each[0])
+
+                        < Plane key={index}
+
+                            pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            img={each[0]}
+                            heading={each[1]}
+                            discription={each[2]}
+                            link={each[3]}
+                        />
+                    )
+                }
+
+            </group>
 
 
-            {
-                // Array.from({ length: 5 }).map((each, index) => <Plane key={index} pos={[index * 2, 0, 0]} />)
 
-            }
 
-            {
+
+
+
+            {/* {
                 arr.map((each, index) =>
                     // console.log(each[0])
 
                     < Plane key={index}
                         // reff={cardref}
-                        pos={[(index - middle) * gap, cardheight / 2, 0]}
+                        pos={[(index - middle) * gap, cardheight + 1.5, 0]}
                         img={each[0]}
                         heading={each[1]}
                         discription={each[2]}
                         link={each[3]}
                     />
                 )
-            }
+            } */}
 
 
 
