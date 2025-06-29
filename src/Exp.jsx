@@ -1,6 +1,6 @@
-import { Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
+import { Box, Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
 import React, { useRef, useState } from 'react'
-import { AdditiveBlending, Box3, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
+import { AdditiveBlending, Box3, Box3Helper, BoxGeometry, DoubleSide, Frustum, Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
 import { geometry, three, vector3 } from 'maath'
 import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { ChromaticAberration, EffectComposer, Noise, Outline, Scanline, Vignette } from '@react-three/postprocessing';
@@ -10,6 +10,8 @@ import { BlendFunction, Selection } from 'postprocessing'
 import img from '/1.jpg'
 import img1 from '/2.png'
 import { useMemo } from 'react';
+
+
 
 
 // FilmShader.js
@@ -509,32 +511,6 @@ function Plane({ pos, img, heading, discription, link, reff }) {
             <Edges gapSize={.1} lineWidth={0} count={10} ref={edgesRef} name='line' color={"black"} />
 
 
-
-            {/* <Outlines thickness={.01} color={'#111'} /> */}
-
-
-            {/* <planeGeometry args={[1, 1, 10, 10]} /> */}
-            {/* <boxGeometry args={[1, 1, .01]} /> */}
-            {/* <mesh position={pos} castShadow receiveShadow onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} >
-                <RoundedBoxGeometry />
-                <meshStandardMaterial />
-
-                {true && <Outlines thickness={10} color={true ? 'aquamarine' : "red"} />}
-            </mesh> */}
-
-            {/* <mesh position={pos} castShadow receiveShadow onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} >
-                <torusKnotGeometry />
-                <meshStandardMaterial />
-                {true && <Outlines thickness={1} color={true ? 'aquamarine' : "red"} />}
-            </mesh> */}
-
-
-            {/* {true && <Outlines thickness={10} color={true ? 'aquamarine' : "red"} />} */}
-
-            {/* {true && <Outlines thickness={1} color={true ? 'aquamarine' : "red"} />} */}
-
-
-
             {/* <EffectComposer multisampling={8} autoClear={false}>
                 <Outline
                     selection={[ cardref]}
@@ -646,6 +622,7 @@ export default function Exp() {
     // const cardgroup4 = useRef()
 
     const cardgroups = [cardgroup1, cardgroup2]
+    const currentcard = useRef(0)
 
 
     // const cardgroups_iny = [cardgroup4, cardgroup3, cardgroup1]
@@ -677,7 +654,7 @@ export default function Exp() {
 
     // })
 
-    const { scene } = useThree()
+    const { scene, camera } = useThree()
 
 
     const [overflow, setOverflow] = useState(false)
@@ -686,6 +663,13 @@ export default function Exp() {
 
     const [ismoving, setIsmoving] = useState()
 
+
+    let rangex_negative = 5
+    let rangex_positive = 8
+
+    // const worldPosition = new Vector3();
+
+    const box = new Box3()
 
     return (
         <>
@@ -706,39 +690,45 @@ export default function Exp() {
             <OrbitControls
                 mouseButtons={{ LEFT: 2, RIGHT: 0 }}
                 touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_PAN }}
-                target={[5, 1, 0]}
+                target={[7, 1, 0]}
                 enableRotate={false}
                 // enableZoom={false}
-                // maxDistance={3}
+                minDistance={1.4}
+                maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
 
-                    const box = new Box3().setFromObject(cardgroup2.current)
-
-                    console.log(box);
-
-                    // console.log(e.target,e.target.target, e.target.target0, e.target.position0);
-
-
-
-                    if (current.x < 3) {
-                        console.log("moving left");
-                        cardgroup2.current.position.x = -10
-
-
+                    // console.log(box);
+                    box.setFromObject(cardgroup1.current)
+                    if (box.min.x < current.x && box.max.x > current.x) {
+                        currentcard.current = 1
+                        box.setFromObject(cardgroup1.current)
                     }
-                    else if (current.x > 6) {
-                        console.log("moving right");
-                        cardgroup2.current.position.x = 10
-
-
+                    else {
+                        currentcard.current = 0
+                        box.setFromObject(cardgroup2.current)
                     }
 
+                    // const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "green" }))
+                    // mesh1.position.x = rangex_negative
+                    // const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "red" }))
+                    // mesh2.position.x = rangex_positive
+                    // scene.add(mesh1, mesh2)
+                    // console.log(rangex_negative, rangex_positive, current.x, currentcard.current);
+                    // console.log(currentcard, box.min.x, box.max.x);
 
 
+                    if (current.x < rangex_negative) {
+                        cardgroups[currentcard.current].current.position.x = (box.min.x - total_width_ofgroup + gap)
+                        rangex_positive = rangex_negative
+                        rangex_negative = (rangex_negative - (total_width_ofgroup))
+                    }
 
-                    // if (current.x)
-
+                    else if (current.x > rangex_positive) {
+                        cardgroups[currentcard.current].current.position.x = box.max.x
+                        rangex_negative = rangex_positive
+                        rangex_positive = (rangex_positive + (total_width_ofgroup))
+                    }
 
 
 
@@ -814,7 +804,8 @@ export default function Exp() {
 
 
 
-            <group ref={cardgroup2}  >
+            <group ref={cardgroup2} >
+                {/* <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} > */}
                 {
                     arr.map((each, index) =>
                         // console.log(each[0])

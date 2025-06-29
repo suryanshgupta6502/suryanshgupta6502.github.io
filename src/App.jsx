@@ -5,7 +5,7 @@ import Exp from './Exp'
 export default function App() {
     return (
         <Canvas  camera={{
-            position: [5, 1, 8]
+            position: [7, 1, 2]
         }} >
             <Exp />
         </Canvas >
