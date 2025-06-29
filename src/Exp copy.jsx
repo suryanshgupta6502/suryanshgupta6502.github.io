@@ -1,7 +1,7 @@
 import { Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
 import React, { useRef, useState } from 'react'
-import { AdditiveBlending, Box3, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
-import { geometry, three, vector3 } from 'maath'
+import { AdditiveBlending, DoubleSide, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2 } from 'three';
+import { geometry, three } from 'maath'
 import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { ChromaticAberration, EffectComposer, Noise, Outline, Scanline, Vignette } from '@react-three/postprocessing';
 // import { RoundedPlaneGeometry } from 'maath/dist/declarations/src/geometry';
@@ -642,13 +642,11 @@ export default function Exp() {
 
     const cardgroup1 = useRef()
     const cardgroup2 = useRef()
-    // const cardgroup3 = useRef()
-    // const cardgroup4 = useRef()
+    const cardgroup3 = useRef()
+    const cardgroup4 = useRef()
 
-    const cardgroups = [cardgroup1, cardgroup2]
-
-
-    // const cardgroups_iny = [cardgroup4, cardgroup3, cardgroup1]
+    const cardgroups_inx = [cardgroup1, cardgroup2]
+    const cardgroups_iny = [cardgroup4, cardgroup3, cardgroup1]
 
     // const total_width_ofgroup = 14
     const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
@@ -663,8 +661,8 @@ export default function Exp() {
     let rangey = total_height_ofgroup * 2
 
 
-    // const currentcard_inx = useRef(0)
-    // const currentcard_iny = useRef(0)
+    const currentcard_inx = useRef(0)
+    const currentcard_iny = useRef(0)
 
 
     // console.log(total_width_ofgroup, rangex, total_width_ofgroup / 4);
@@ -683,8 +681,6 @@ export default function Exp() {
     const [overflow, setOverflow] = useState(false)
 
     // const [currentcard, setcurrentcard] = useState(0)
-
-    const [ismoving, setIsmoving] = useState()
 
 
     return (
@@ -706,42 +702,109 @@ export default function Exp() {
             <OrbitControls
                 mouseButtons={{ LEFT: 2, RIGHT: 0 }}
                 touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_PAN }}
-                target={[5, 1, 0]}
+                target={[0, 1, 0]}
                 enableRotate={false}
                 // enableZoom={false}
                 // maxDistance={3}
                 onChange={(e) => {
+                    // console.log(e.target);
+
                     const current = e.target.target
+                    // console.log(rangex, current.x, rangex - total_width_ofgroup / 2);
 
-                    const box = new Box3().setFromObject(cardgroup2.current)
+                    // console.log(current.x, rangex, (rangex - (total_width_ofgroup / 2)))
+                    console.log(currentcard_inx, current.y, rangey);
 
-                    console.log(box);
-
-                    // console.log(e.target,e.target.target, e.target.target0, e.target.position0);
-
+                    if ((current.x > rangex)) {
+                        // console.log("right");
 
 
-                    if (current.x < 3) {
-                        console.log("moving left");
-                        cardgroup2.current.position.x = -10
+                        // console.log(cardgroups);
 
+
+                        // if (currentcard.current == 0) {
+                        //     cardgroups[currentcard.current].current.position.x += (total_width_ofgroup)
+                        //     rangex += (total_width_ofgroup )
+
+                        // }
+                        // else {
+                        //     cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
+                        //     rangex += (total_width_ofgroup * 2)
+
+                        // }
+
+                        // cardgroups[currentcard.current].current.position.x += currentcard.current == 0 ? (total_width_ofgroup) : (total_width_ofgroup * 2)
+                        // cardgroup2.current.position.x += total_width_ofgroup
+
+                        // rangex += (total_width_ofgroup * 2)
+                        // console.log(rangex, "going right");
+
+                        // setOverflow(true)
+
+
+                        // cardgroups_inx[currentcard_inx.current].current.position.x += (total_width_ofgroup * 2)
+                        // rangex += (total_width_ofgroup)
+                        // currentcard_inx.current = (currentcard_inx.current + 1) % 2
+
+
+                        // final
+                        // cardgroups[currentcard.current].current.position.x += (total_width_ofgroup * 2)
+                        // rangex += (total_width_ofgroup+2)
+                        // currentcard.current = (currentcard.current + 1) % 2
 
                     }
-                    else if (current.x > 6) {
-                        console.log("moving right");
-                        cardgroup2.current.position.x = 10
 
+                    else if (current.x < (rangex - total_width_ofgroup + 2)) {
+                        // console.log("left");
+
+
+                        // currentcard_inx.current = (currentcard_inx.current + 1) % 2
+                        // cardgroups_inx[currentcard_inx.current].current.position.x -= (total_width_ofgroup * 2)
+                        // rangex -= (total_width_ofgroup)
+
+
+
+                        // final
+                        // currentcard.current = (currentcard.current + 1) % 2
+                        // cardgroups[currentcard.current].current.position.x -= (total_width_ofgroup * 2)
+                        // rangex -= (total_width_ofgroup+2)
+
+                    }
+
+
+                    if (current.y > (rangey)) {
+                        console.log("up");
+
+
+                        cardgroups_iny[currentcard_iny.current].current.position.y += (total_height_ofgroup * 3)
+                        rangey += (total_height_ofgroup * 1)
+                        currentcard_iny.current = (currentcard_iny.current + 1) % 3
+
+
+
+                        // rangey += (total_height_ofgroup + 2)
+
+                    }
+                    else if (current.y < rangey) {
+                        console.log("down");
+
+
+                        // currentcard_iny.current = (currentcard_iny.current + 1) % 3
+
+                        // cardgroups_iny[currentcard_iny.current].current.position.y -= (total_height_ofgroup * 3)
+                        // rangey -= (total_height_ofgroup * 1)
+
+
+
+                        // rangey += (total_height_ofgroup + 2)
 
                     }
 
 
 
 
-                    // if (current.x)
 
-
-
-
+                    // console.log(e.target.target)
                 }}
 
             />
@@ -754,7 +817,7 @@ export default function Exp() {
 
                         < Plane key={index}
 
-                            pos={[(index) * (gap) + 1, cardheight / 2 + total_height_ofgroup, 0]}
+                            pos={[index * gap, cardheight / 2, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
 
                             img={each[0]}
@@ -764,42 +827,19 @@ export default function Exp() {
                         />
                     )
                 }
-                {/* </group> */}
+            </group>
 
 
 
 
-                {/* <group ref={cardgroup2}  > */}
+            <group ref={cardgroup2} >
                 {true &&
                     arr.map((each, index) =>
                         // console.log(each[0])
 
                         < Plane key={index}
 
-                            pos={[(index) * gap, cardheight / 2, 0]}
-
-                            // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
-
-                            img={each[0]}
-                            heading={each[1]}
-                            discription={each[2]}
-                            link={each[3]}
-                        />
-                    )
-                }
-
-                {/* </group> */}
-
-
-
-                {/* <group ref={cardgroup3} > */}
-                {true &&
-                    arr.map((each, index) =>
-                        // console.log(each[0])
-
-                        < Plane key={index}
-
-                            pos={[(index) * gap - 1, cardheight / 2 - total_height_ofgroup, 0]}
+                            pos={[(index * gap) + total_width_ofgroup, cardheight / 2, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
 
                             img={each[0]}
@@ -814,59 +854,14 @@ export default function Exp() {
 
 
 
-            <group ref={cardgroup2}  >
-                {
-                    arr.map((each, index) =>
-                        // console.log(each[0])
-
-                        < Plane key={index}
-
-                            pos={[(index) * (gap) + 1, cardheight / 2 + total_height_ofgroup, 0]}
-                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
-
-                            img={each[0]}
-                            heading={each[1]}
-                            discription={each[2]}
-                            link={each[3]}
-                        />
-                    )
-                }
-                {/* </group> */}
-
-
-
-
-                {/* <group ref={cardgroup2}  > */}
+            <group ref={cardgroup3} >
                 {true &&
                     arr.map((each, index) =>
                         // console.log(each[0])
 
                         < Plane key={index}
 
-                            pos={[(index) * gap, cardheight / 2, 0]}
-
-                            // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
-
-                            img={each[0]}
-                            heading={each[1]}
-                            discription={each[2]}
-                            link={each[3]}
-                        />
-                    )
-                }
-
-                {/* </group> */}
-
-
-
-                {/* <group ref={cardgroup3} > */}
-                {true &&
-                    arr.map((each, index) =>
-                        // console.log(each[0])
-
-                        < Plane key={index}
-
-                            pos={[(index) * gap - 1, cardheight / 2 - total_height_ofgroup, 0]}
+                            pos={[(index * gap) + .2, cardheight / 2 + total_height_ofgroup, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
 
                             img={each[0]}
@@ -879,11 +874,7 @@ export default function Exp() {
 
             </group>
 
-
-
-
-
-            {/* <group ref={cardgroup4} >
+            <group ref={cardgroup4} >
                 {true &&
                     arr.map((each, index) =>
                         // console.log(each[0])
@@ -901,7 +892,7 @@ export default function Exp() {
                     )
                 }
 
-            </group> */}
+            </group>
 
 
 
