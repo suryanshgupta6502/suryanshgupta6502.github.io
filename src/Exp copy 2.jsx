@@ -631,7 +631,7 @@ export default function Exp() {
     const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
     const total_height_ofgroup = (cardheight + gap + .5) / 2
 
-    // console.log(total_height_ofgroup);
+    console.log(total_height_ofgroup);
 
     // const total_width_ofgroup = ((arr.length + 1) * (cardwidth + gap)) 
     // console.log(total_width_ofgroup);
@@ -665,34 +665,16 @@ export default function Exp() {
     const [ismoving, setIsmoving] = useState()
 
 
-    let rangex_negative = 7 - 2
-    let rangex_positive = 7 + 2
+    let rangex_negative = 5
+    let rangex_positive = 8
 
-    let rangey_positive = 1 + 1
-    let rangey_negative = 1 - 1
+    let rangey_positive = 2
+    let rangey_negative = 0
 
 
     // const worldPosition = new Vector3();
 
     const box = new Box3()
-    const box2 = new Box3()
-    // const boxhelper = new Box3Helper(box)
-    // scene.add(boxhelper)
-
-    setInterval(() => {
-        console.clear();
-        console.log("Console cleared and this is the latest log");
-    }, (1000 * 60));
-
-
-    const mesh1 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "red" }))
-    const mesh2 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "green" }))
-    const mesh3 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "blue" }))
-    const mesh4 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "orange" }))
-
-    scene.add(mesh1, mesh2, mesh3, mesh4)
-
-
 
     return (
         <>
@@ -722,112 +704,68 @@ export default function Exp() {
                 // maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
-                    // box.setFromObject(cardgroups[currentcard.current].current) //1st card
-
-                    box.setFromObject(cardgroup1.current)
-                    // box2.setFromObject(cardgroup2.current)
-                    if (box.containsPoint(current)) {
-                        box.setFromObject(cardgroup1.current)
-                        currentcard.current = 0
-                    }
-                    // else if (box2.containsPoint(current)) { currentcard.current = 1 }
-                    else {
-                        box.setFromObject(cardgroup2.current)
-                        currentcard.current = 1
-                    }
-                    console.log(currentcard.current);
-
-
-                    if (box.containsPoint(current)) {
-
-                        rangex_negative = box.min.x + 5
-                        rangex_positive = box.max.x - 5
-
-                        rangey_positive = box.max.y - 2
-                        rangey_negative = box.min.y + 2
-
-
-                        if (current.x > rangex_positive) {
-                            // console.log("going out posi");
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.x = current.x + total_width_ofgroup
-                            cardgroups[(currentcard.current + 1) % 2].current.position.x = box.max.x
-                            // const tempy = current.y
-                            
-
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.y = tempy
-
-
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y + gap)
-
-                        }
-                        else if (current.x < rangex_negative) {
-                            cardgroups[(currentcard.current + 1) % 2].current.position.x = (box.min.x - total_width_ofgroup + gap)
-                        }
-
-                        else if (current.y > rangey_positive) {
-
-                            cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
-
-                        }
-                        else if (current.y < rangey_negative) {
-                            cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y - (total_height_ofgroup + cardheight + (gap / 8)))
-                        }
-
-                        else {
-                            const temp = cardgroups[currentcard.current].current.position
-                            cardgroups[(currentcard.current + 1) % 2].current.position.copy(temp)
-                        }
-
-
-                        // mesh1.position.copy(box.min)
-                        mesh1.position.x = rangex_negative
-
-                        // mesh2.position.copy(box.max)
-                        mesh2.position.x = rangex_positive
-
-                        // mesh3.position.copy(box.min)
-                        mesh3.position.y = rangey_negative
-
-                        // mesh4.position.copy(box.max)
-                        mesh4.position.y = rangey_positive
-
-                        // console.log(rangex_negative,
-                        //     rangex_positive,
-                        //     rangey_negative,
-                        //     rangey_positive,);
-
-
-                    }
-
-
-
-
-
-
-                    // if (box.containsPoint(current)) {
-
-                    //     if (current.x > rangex_positive) {
-                    //         console.log("going out");
-
-                    //     }
-
-
-                    // }
-
-
-
-
 
                     // console.log(box);
+                    box.setFromObject(cardgroup1.current)
+                    if (box.min.x < current.x && box.max.x > current.x) {
+                        currentcard.current = 1
+                        box.setFromObject(cardgroup1.current)
+                    }
+                    if (box.min.y < current.y && box.max.y > current.y) {
+                        currentcard.current = 1
+                        box.setFromObject(cardgroup1.current)
+                    }
+                    else {
+                        currentcard.current = 0
+                        box.setFromObject(cardgroup2.current)
+                    }
+
+
+                    console.log(box);
+
+
+                    const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "green" }))
+                    // mesh1.position.y = box.min.y
+                    mesh1.position.y = rangey_negative
+                    const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "red" }))
+                    mesh2.position.y = rangey_positive
+                    // mesh2.position.y = box.max.y
+                    scene.add(mesh1, mesh2)
+
+
+                    // console.log(rangex_negative, rangex_positive, current.x, currentcard.current);
+                    // console.log(currentcard, box.min.x, box.max.x);
+
+
+                    if (current.x < rangex_negative) {
+
+                        cardgroups[currentcard.current].current.position.x = (box.min.x - total_width_ofgroup + gap)
+                        rangex_positive = rangex_negative
+                        rangex_negative = (rangex_negative - (total_width_ofgroup))
+                    }
+
+                    else if (current.x > rangex_positive) {
+                        cardgroups[currentcard.current].current.position.x = box.max.x
+                        rangex_negative = rangex_positive
+                        rangex_positive = (rangex_positive + (total_width_ofgroup))
+                    }
 
 
 
 
 
 
+                    if (current.y > rangey_positive) {
+                        cardgroups[currentcard.current].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
+                        rangey_negative = rangey_positive
+                        rangey_positive = (rangey_positive + (total_height_ofgroup * 2))
+                    }
 
-
-
+                    else if (current.y < rangey_negative) {
+                        cardgroups[currentcard.current].current.position.y = (box.min.y - (total_height_ofgroup + cardheight + (gap / 8)))
+                        rangey_positive = rangey_negative
+                        rangey_negative = (rangey_negative - (total_height_ofgroup * 2))
+                    }
 
 
 
