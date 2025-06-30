@@ -631,6 +631,7 @@ export default function Exp() {
     const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
     const total_height_ofgroup = (cardheight + gap + .5) / 2
 
+    console.log(total_height_ofgroup);
 
     // const total_width_ofgroup = ((arr.length + 1) * (cardwidth + gap)) 
     // console.log(total_width_ofgroup);
@@ -667,6 +668,10 @@ export default function Exp() {
     let rangex_negative = 5
     let rangex_positive = 8
 
+    let rangey_positive = 2
+    let rangey_negative = 0
+
+
     // const worldPosition = new Vector3();
 
     const box = new Box3()
@@ -685,6 +690,8 @@ export default function Exp() {
                 />
             </EffectComposer> */}
 
+
+
             <axesHelper />
             <ambientLight args={['white', 10]} />
             <OrbitControls
@@ -693,8 +700,8 @@ export default function Exp() {
                 target={[7, 1, 0]}
                 enableRotate={false}
                 // enableZoom={false}
-                minDistance={1.4}
-                maxDistance={2.5}
+                // minDistance={1.4}
+                // maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
 
@@ -704,21 +711,34 @@ export default function Exp() {
                         currentcard.current = 1
                         box.setFromObject(cardgroup1.current)
                     }
+                    if (box.min.y < current.y && box.max.y > current.y) {
+                        currentcard.current = 1
+                        box.setFromObject(cardgroup1.current)
+                    }
                     else {
                         currentcard.current = 0
                         box.setFromObject(cardgroup2.current)
                     }
 
-                    // const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "green" }))
-                    // mesh1.position.x = rangex_negative
-                    // const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "red" }))
-                    // mesh2.position.x = rangex_positive
-                    // scene.add(mesh1, mesh2)
+
+                    console.log(box);
+
+
+                    const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "green" }))
+                    // mesh1.position.y = box.min.y
+                    mesh1.position.y = rangey_negative
+                    const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: "red" }))
+                    mesh2.position.y = rangey_positive
+                    // mesh2.position.y = box.max.y
+                    scene.add(mesh1, mesh2)
+
+
                     // console.log(rangex_negative, rangex_positive, current.x, currentcard.current);
                     // console.log(currentcard, box.min.x, box.max.x);
 
 
                     if (current.x < rangex_negative) {
+
                         cardgroups[currentcard.current].current.position.x = (box.min.x - total_width_ofgroup + gap)
                         rangex_positive = rangex_negative
                         rangex_negative = (rangex_negative - (total_width_ofgroup))
@@ -729,6 +749,24 @@ export default function Exp() {
                         rangex_negative = rangex_positive
                         rangex_positive = (rangex_positive + (total_width_ofgroup))
                     }
+
+
+
+
+
+
+                    if (current.y > rangey_positive) {
+                        cardgroups[currentcard.current].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
+                        rangey_negative = rangey_positive
+                        rangey_positive = (rangey_positive + (total_height_ofgroup * 2))
+                    }
+
+                    else if (current.y < rangey_negative) {
+                        cardgroups[currentcard.current].current.position.y = (box.min.y - (total_height_ofgroup + cardheight + (gap / 8)))
+                        rangey_positive = rangey_negative
+                        rangey_negative = (rangey_negative - (total_height_ofgroup * 2))
+                    }
+
 
 
 
