@@ -1,6 +1,6 @@
 import { Box, Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
 import React, { useRef, useState } from 'react'
-import { AdditiveBlending, Box3, Box3Helper, BoxGeometry, DoubleSide, Frustum, Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
+import { AdditiveBlending, Box3, Box3Helper, BoxGeometry, DoubleSide, Frustum, Matrix4, Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
 import { geometry, three, vector3 } from 'maath'
 import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { ChromaticAberration, EffectComposer, Noise, Outline, Scanline, Vignette } from '@react-three/postprocessing';
@@ -10,6 +10,7 @@ import { BlendFunction, Selection } from 'postprocessing'
 import img from '/1.jpg'
 import img1 from '/2.png'
 import { useMemo } from 'react';
+import { MeshStandardMaterial } from 'three';
 
 
 
@@ -685,14 +686,66 @@ export default function Exp() {
     }, (1000 * 60));
 
 
-    const mesh1 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "red" }))
-    const mesh2 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "green" }))
-    const mesh3 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "blue" }))
-    const mesh4 = new Mesh(new BoxGeometry(.5, .5, .5), new MeshBasicMaterial({ color: "orange" }))
+    const mesh1 = new Mesh(new BoxGeometry(2, 5, 1), new MeshBasicMaterial({ color: "red" }))
+    const mesh2 = new Mesh(new BoxGeometry(2, 5, 1), new MeshBasicMaterial({ color: "green" }))
+    const mesh3 = new Mesh(new BoxGeometry(2, 5, 1), new MeshBasicMaterial({ color: "blue" }))
+    const mesh4 = new Mesh(new BoxGeometry(2, 5, 1), new MeshBasicMaterial({ color: "orange" }))
 
-    scene.add(mesh1, mesh2, mesh3, mesh4)
+    // scene.add(mesh1, mesh2, mesh3, mesh4)
 
 
+
+    const helper = new Box3Helper()
+
+
+    // const spacing = 5;
+    // const chunkSize = spacing * 3; // chunk size in all directions
+    // const range = 1; // number of chunks to generate around target
+
+    // // const controls = new OrbitControls(camera, renderer.domElement);
+    // let currentChunk = new Vector3();
+    // let spawnedMeshes = [];
+
+    // function getChunk(pos) {
+    //     return new Vector3(
+    //         Math.floor(pos.x / chunkSize),
+    //         Math.floor(pos.y / chunkSize),
+    //         Math.floor(pos.z / chunkSize)
+    //     );
+    // }
+
+    // function spawnMeshes(centerChunk) {
+    //     // Remove previous
+    //     spawnedMeshes.forEach(m => scene.remove(m));
+    //     spawnedMeshes = [];
+
+    //     const geometry = new BoxGeometry(1, 1, 1);
+    //     const material = new MeshStandardMaterial({ color: 0xff5555 });
+
+    //     for (let x = -range; x <= range; x++) {
+    //         for (let y = -range; y <= range; y++) {
+    //             for (let z = -range; z <= range; z++) {
+    //                 const cx = (centerChunk.x + x) * chunkSize;
+    //                 const cy = (centerChunk.y + y) * chunkSize;
+    //                 const cz = (centerChunk.z + z) * chunkSize;
+
+    //                 const mesh = new Mesh(geometry, material);
+    //                 mesh.position.set(cx, cy, cz);
+    //                 scene.add(mesh);
+    //                 spawnedMeshes.push(mesh);
+    //             }
+    //         }
+    //     }
+    // }
+
+
+
+    const objects = [cardgroup1.current, cardgroup2.current];
+    objects.forEach(each => {
+        // scene.add(each)
+        // each.visible = false
+    })
+    const frustum = new Frustum();
 
     return (
         <>
@@ -722,82 +775,127 @@ export default function Exp() {
                 // maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
+                    // playerPos.copy(current)
+
+                    // updateMeshesAroundTarget(current)
+
+                    // const target = current
+                    // const newChunk = getChunk(target);
+
+                    // if (!newChunk.equals(currentChunk)) {
+                    //     currentChunk.copy(newChunk);
+                    //     spawnMeshes(newChunk);
+                    // }
+
+
+
+
+
+
+
+                    // Frustum setup
+                    const cameraViewProjectionMatrix = new Matrix4();
+
+                    // In your animation loop or update function:
+                    camera.updateMatrixWorld(); // Must update camera matrix
+                    cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+                    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+                    // Loop through objects and toggle visibility
+                    objects.forEach((obj, index) => {
+                        const box = new Box3().setFromObject(obj);
+
+                        // console.log(obj);
+
+                        console.log(frustum.intersectsBox(box), index);
+
+                        // obj.visible = frustum.intersectsObject(obj);
+                    });
+
+
+
+
                     // box.setFromObject(cardgroups[currentcard.current].current) //1st card
-
-                    box.setFromObject(cardgroup1.current)
-                    // box2.setFromObject(cardgroup2.current)
-                    if (box.containsPoint(current)) {
-                        box.setFromObject(cardgroup1.current)
-                        currentcard.current = 0
-                    }
-                    // else if (box2.containsPoint(current)) { currentcard.current = 1 }
-                    else {
-                        box.setFromObject(cardgroup2.current)
-                        currentcard.current = 1
-                    }
-                    console.log(currentcard.current);
+                    // helper.box = cardgroups[currentcard.current].current
+                    // console.log(helper.box);
 
 
-                    if (box.containsPoint(current)) {
 
-                        rangex_negative = box.min.x + 5
-                        rangex_positive = box.max.x - 5
+                    // box.setFromObject(cardgroup1.current)
+                    // // box2.setFromObject(cardgroup2.current)
+                    // if (box.containsPoint(current)) {
+                    //     box.setFromObject(cardgroup1.current)
+                    //     currentcard.current = 0
+                    // }
+                    // // else if (box2.containsPoint(current)) { currentcard.current = 1 }
+                    // else {
+                    //     box.setFromObject(cardgroup2.current)
+                    //     currentcard.current = 1
+                    // }
 
-                        rangey_positive = box.max.y - 2
-                        rangey_negative = box.min.y + 2
-
-
-                        if (current.x > rangex_positive) {
-                            // console.log("going out posi");
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.x = current.x + total_width_ofgroup
-                            cardgroups[(currentcard.current + 1) % 2].current.position.x = box.max.x
-                            // const tempy = current.y
-                            
-
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.y = tempy
-
-
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y + gap)
-
-                        }
-                        else if (current.x < rangex_negative) {
-                            cardgroups[(currentcard.current + 1) % 2].current.position.x = (box.min.x - total_width_ofgroup + gap)
-                        }
-
-                        else if (current.y > rangey_positive) {
-
-                            cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
-
-                        }
-                        else if (current.y < rangey_negative) {
-                            cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y - (total_height_ofgroup + cardheight + (gap / 8)))
-                        }
-
-                        else {
-                            const temp = cardgroups[currentcard.current].current.position
-                            cardgroups[(currentcard.current + 1) % 2].current.position.copy(temp)
-                        }
+                    // // console.log(cardgroups[currentcard.current].current,
+                    // // currentcard.current);
+                    // // helper.box.setFromObject(cardgroups[currentcard.current].current)
 
 
-                        // mesh1.position.copy(box.min)
-                        mesh1.position.x = rangex_negative
 
-                        // mesh2.position.copy(box.max)
-                        mesh2.position.x = rangex_positive
+                    // if (box.containsPoint(current)) {
 
-                        // mesh3.position.copy(box.min)
-                        mesh3.position.y = rangey_negative
+                    //     rangex_negative = box.min.x + 5
+                    //     rangex_positive = box.max.x - 5
 
-                        // mesh4.position.copy(box.max)
-                        mesh4.position.y = rangey_positive
-
-                        // console.log(rangex_negative,
-                        //     rangex_positive,
-                        //     rangey_negative,
-                        //     rangey_positive,);
+                    //     rangey_positive = box.max.y - 2
+                    //     rangey_negative = box.min.y + 2
 
 
-                    }
+                    //     if (current.x > rangex_positive) {
+                    //         // console.log("going out posi");
+                    //         // cardgroups[(currentcard.current + 1) % 2].current.position.x = current.x + total_width_ofgroup
+                    //         cardgroups[(currentcard.current + 1) % 2].current.position.x = box.max.x
+                    //         // const tempy = current.y
+                    //         // cardgroups[(currentcard.current + 1) % 2].current.position.y = tempy
+                    //         // cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y + gap)
+                    //     }
+                    //     else if (current.x < rangex_negative) {
+                    //         cardgroups[(currentcard.current + 1) % 2].current.position.x = (box.min.x - total_width_ofgroup + gap)
+                    //     }
+
+                    //     if (current.y > rangey_positive) {
+                    //         cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
+                    //     }
+                    //     else if (current.y < rangey_negative) {
+                    //         cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y - (total_height_ofgroup + cardheight + (gap / 8)))
+                    //     }
+
+
+                    //     // if()
+
+
+                    //     // else {
+                    //     //     const temp = cardgroups[currentcard.current].current.position
+                    //     //     cardgroups[(currentcard.current + 1) % 2].current.position.copy(temp)
+                    //     // }
+
+
+                    //     // mesh1.position.copy(box.min)
+                    //     mesh1.position.x = rangex_negative
+
+                    //     // mesh2.position.copy(box.max)
+                    //     mesh2.position.x = rangex_positive
+
+                    //     // mesh3.position.copy(box.min)
+                    //     mesh3.position.y = rangey_negative
+
+                    //     // mesh4.position.copy(box.max)
+                    //     mesh4.position.y = rangey_positive
+
+                    //     // console.log(rangex_negative,
+                    //     //     rangex_positive,
+                    //     //     rangey_negative,
+                    //     //     rangey_positive,);
+
+
+                    // }
 
 
 
@@ -904,8 +1002,8 @@ export default function Exp() {
 
 
 
-            <group ref={cardgroup2} >
-                {/* <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} > */}
+            {/* <group ref={cardgroup2} > */}
+                <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} >
                 {
                     arr.map((each, index) =>
                         // console.log(each[0])
