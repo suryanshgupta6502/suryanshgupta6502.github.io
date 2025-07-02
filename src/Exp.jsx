@@ -626,12 +626,19 @@ export default function Exp() {
     const cardgroups = [cardgroup1, cardgroup2]
     const currentcard = useRef(0)
 
+    const cardverticalgap = (cardheight + gap / 8)
 
     // const cardgroups_iny = [cardgroup4, cardgroup3, cardgroup1]
 
     // const total_width_ofgroup = 14
     const total_width_ofgroup = (cardwidth * (arr.length + 1)) + gap
-    const total_height_ofgroup = (cardheight + gap + .5) / 2
+    let total_height_ofgroup = ((cardheight) * 3) + (gap / 2)
+
+
+
+
+
+    // const total_height_ofgroup = (cardheight + gap + .5) / 2
 
     // console.log(total_height_ofgroup);
 
@@ -667,11 +674,11 @@ export default function Exp() {
     const [ismoving, setIsmoving] = useState()
 
 
-    let rangex_negative = 7 - 2
-    let rangex_positive = 7 + 2
+    let rangex_negative = -6 + 3
+    let rangex_positive = 6 - 3
 
-    let rangey_positive = 1 + 1
-    let rangey_negative = 1 - 1
+    let rangey_positive = 3 - 2
+    let rangey_negative = -3 + 2
 
 
     // const worldPosition = new Vector3();
@@ -748,60 +755,60 @@ export default function Exp() {
     // })
     // const frustum = new Frustum();
 
-    const tileSize = total_width_ofgroup;
-    const tiles = [];
+    // const tileSize = total_width_ofgroup;
+    // const tiles = [];
 
-    useEffect(() => {
-
-
+    // useEffect(() => {
 
 
 
-        // Create 9 tiles in a 3x3 grid
-        for (let i = -total_width_ofgroup / 8; i <= 0; i++) {
-            for (let j = -total_height_ofgroup / 2; j <= 0; j++) {
-                const g = cardgroup1.current.clone(true); // Or alternate between groupA and groupB
-                g.position.set(i * tileSize, j * tileSize, 0);
-                scene.add(g);
-                tiles.push(g);
+
+
+    // Create 9 tiles in a 3x3 grid
+    // for (let i = -total_width_ofgroup / 8; i <= 0; i++) {
+    //     for (let j = -total_height_ofgroup / 2; j <= 0; j++) {
+    //         const g = cardgroup1.current.clone(true); // Or alternate between groupA and groupB
+    //         g.position.set(i * tileSize, j * tileSize, 0);
+    //         scene.add(g);
+    //         tiles.push(g);
 
 
 
-                // const tile = new Group()
-                // cardgroup1.current.children.forEach((child) => {
-                //     if (child.isMesh) {
-                //         const mesh = new Mesh(child.geometry, child.material)
-                //         mesh.position.copy(child.position)
-                //         mesh.rotation.copy(child.rotation)
-                //         tile.add(mesh)
-                //     }
-                // })
+    //         // const tile = new Group()
+    //         // cardgroup1.current.children.forEach((child) => {
+    //         //     if (child.isMesh) {
+    //         //         const mesh = new Mesh(child.geometry, child.material)
+    //         //         mesh.position.copy(child.position)
+    //         //         mesh.rotation.copy(child.rotation)
+    //         //         tile.add(mesh)
+    //         //     }
+    //         // })
 
-                // tile.position.set(i * tileSize, j * tileSize, 0)
-                // scene.add(tile)
-                // tiles.push(tile)
-
-
-            }
-        }
-
-        function updateTiling() {
-            const baseX = Math.floor(cameraTarget.x / tileSize) * tileSize;
-            const baseZ = Math.floor(cameraTarget.z / tileSize) * tileSize;
-
-            let idx = 0;
-            for (let i = -1; i <= 1; i++) {
-                for (let j = -1; j <= 1; j++) {
-                    tiles[idx].position.set(baseX + i * tileSize, 0, baseZ + j * tileSize);
-                    idx++;
-                }
-            }
-        }
+    //         // tile.position.set(i * tileSize, j * tileSize, 0)
+    //         // scene.add(tile)
+    //         // tiles.push(tile)
 
 
-    }, [cardgroup1.current])
+    //     }
+    // }
+
+    //     function updateTiling() {
+    //         const baseX = Math.floor(cameraTarget.x / tileSize) * tileSize;
+    //         const baseZ = Math.floor(cameraTarget.z / tileSize) * tileSize;
+
+    //         let idx = 0;
+    //         for (let i = -1; i <= 1; i++) {
+    //             for (let j = -1; j <= 1; j++) {
+    //                 tiles[idx].position.set(baseX + i * tileSize, 0, baseZ + j * tileSize);
+    //                 idx++;
+    //             }
+    //         }
+    //     }
 
 
+    // }, [cardgroup1.current])
+
+    scene.add(mesh1, mesh2, mesh3, mesh4)
 
 
 
@@ -833,81 +840,84 @@ export default function Exp() {
                 // maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
+                    // total_height_ofgroup = Math.abs(box.max.y) + Math.abs(box.min.y)
+                    console.log(total_height_ofgroup);
+
+                    // box.setFromObject(cardgroups[currentcard.current].current)
+                    box.setFromObject(cardgroup1.current)
 
 
-                    const baseX = Math.floor(current.x / tileSize) * tileSize;
-                    const baseY = Math.floor(current.y / tileSize) * tileSize;
-
-                    let idx = 0;
-                    for (let i = -total_width_ofgroup / 8; i <= 0; i++) {
-                        for (let j = -total_height_ofgroup / 2; j <= 0; j++) {
-                            tiles[idx].position.set(baseX + i * tileSize, baseY + j * tileSize, 0);
-                            idx++;
-                        }
+                    if (box.containsPoint(current)) {
+                        currentcard.current = 0
+                        // box.setFromObject(cardgroups[currentcard.current].current)
+                        box.setFromObject(cardgroup1.current)
+                    }
+                    else {
+                        currentcard.current = 1
+                        // box.setFromObject(cardgroups[currentcard.current].current)
+                        box.setFromObject(cardgroup2.current)
                     }
 
-                    // playerPos.copy(current)
-
-                    // updateMeshesAroundTarget(current)
-
-                    // const target = current
-                    // const newChunk = getChunk(target);
-
-                    // if (!newChunk.equals(currentChunk)) {
-                    //     currentChunk.copy(newChunk);
-                    //     spawnMeshes(newChunk);
-                    // }
+                    mesh1.position.x = rangex_positive
+                    mesh2.position.x = rangex_negative
+                    
+                    mesh3.position.y = rangey_positive
+                    mesh4.position.y = rangey_negative
 
 
-
-
-
-
-
-                    // Frustum setup
-                    // const cameraViewProjectionMatrix = new Matrix4();
-
-                    // // In your animation loop or update function:
-                    // camera.updateMatrixWorld(); // Must update camera matrix
-                    // cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-                    // frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
-
-                    // // Loop through objects and toggle visibility
-                    // objects.forEach((obj, index) => {
-                    //     const box = new Box3().setFromObject(obj);
-
-                    //     // console.log(obj);
-
-                    //     console.log(frustum.intersectsBox(box), index);
-
-                    //     // obj.visible = frustum.intersectsObject(obj);
-                    // });
-
-
-
-
-                    // box.setFromObject(cardgroups[currentcard.current].current) //1st card
-                    // helper.box = cardgroups[currentcard.current].current
-                    // console.log(helper.box);
-
-
-
-                    // box.setFromObject(cardgroup1.current)
-                    // // box2.setFromObject(cardgroup2.current)
-                    // if (box.containsPoint(current)) {
-                    //     box.setFromObject(cardgroup1.current)
-                    //     currentcard.current = 0
-                    // }
-                    // // else if (box2.containsPoint(current)) { currentcard.current = 1 }
-                    // else {
-                    //     box.setFromObject(cardgroup2.current)
-                    //     currentcard.current = 1
-                    // }
+                    // console.log( currentcard);
 
                     // // console.log(cardgroups[currentcard.current].current,
                     // // currentcard.current);
                     // // helper.box.setFromObject(cardgroups[currentcard.current].current)
 
+                    if (current.x > rangex_positive) {
+                        console.log(box, "going right");
+                        cardgroups[(currentcard.current + 1) % 2].current.position.x = (box.max.x + (total_width_ofgroup / 2))
+
+
+
+                        // extra
+                        cardgroups[(currentcard.current + 1) % 2].current.position.y = ((box.max.y + box.min.y) / 2)
+
+                    }
+                    else if (current.x < rangex_negative) {
+                        console.log("going left");
+
+
+                        cardgroups[(currentcard.current + 1) % 2].current.position.x = (box.min.x - (total_width_ofgroup / 2))
+
+
+
+                        // extra
+                        cardgroups[(currentcard.current + 1) % 2].current.position.y = ((box.max.y + box.min.y) / 2)
+
+
+                    }
+
+
+                    if (current.y > rangey_positive) {
+
+                        console.log("going up");
+                        cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.max.y + (total_height_ofgroup / 2))
+
+
+
+
+                        cardgroups[(currentcard.current + 1) % 2].current.position.x = ((box.max.x + box.min.x) / 2)
+
+                    }
+                    else if (current.y < rangey_negative) {
+                        console.log("going down");
+
+                        cardgroups[(currentcard.current + 1) % 2].current.position.y = (box.min.y - (total_height_ofgroup / 2))
+
+
+
+
+                        cardgroups[(currentcard.current + 1) % 2].current.position.x = ((box.max.x + box.min.x) / 2)
+
+                    }
 
 
                     // if (box.containsPoint(current)) {
@@ -951,7 +961,7 @@ export default function Exp() {
                     //     // mesh1.position.copy(box.min)
                     //     mesh1.position.x = rangex_negative
 
-                    //     // mesh2.position.copy(box.max)
+                    //     // mesh2mesh2mesh2.position.copy(box.max)
                     //     mesh2.position.x = rangex_positive
 
                     //     // mesh3.position.copy(box.min)
@@ -1011,7 +1021,7 @@ export default function Exp() {
                     arr.map((each, index) =>
                         // console.log(each[0])
                         < Plane key={index}
-                            pos={[(index - (arr.length - 1) / 2) * gap, total_height_ofgroup, 0]}
+                            pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
@@ -1045,7 +1055,7 @@ export default function Exp() {
                         // console.log(each[0])
                         < Plane key={index}
                             pos={[(index - (arr.length - 1) / 2) * gap,
-                            -total_height_ofgroup,
+                            -cardverticalgap,
                                 0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
@@ -1109,17 +1119,16 @@ export default function Exp() {
 
 
 
-            <group ref={cardgroup2} visible={false} >
+            <group ref={cardgroup2}  >
                 {/* <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} > */}
+
+
                 {
                     arr.map((each, index) =>
                         // console.log(each[0])
-
                         < Plane key={index}
-
-                            pos={[(index) * (gap) + 1, cardheight / 2 + total_height_ofgroup, 0]}
+                            pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
-
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
@@ -1127,22 +1136,17 @@ export default function Exp() {
                         />
                     )
                 }
-                {/* </group> */}
 
 
 
-
-                {/* <group ref={cardgroup2}  > */}
-                {true &&
+                {
                     arr.map((each, index) =>
                         // console.log(each[0])
-
                         < Plane key={index}
-
-                            pos={[(index) * gap, cardheight / 2, 0]}
-
-                            // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
-
+                            pos={[(index - (arr.length - 1) / 2) * gap,
+                                0,
+                                0]}
+                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
@@ -1151,20 +1155,15 @@ export default function Exp() {
                     )
                 }
 
-                {/* </group> */}
 
-
-
-                {/* <group ref={cardgroup3} > */}
-                {true &&
+                {
                     arr.map((each, index) =>
                         // console.log(each[0])
-
                         < Plane key={index}
-
-                            pos={[(index) * gap - 1, cardheight / 2 - total_height_ofgroup, 0]}
-                            // pos={[(index - middle) * gap, cardheight / 2 + 1, 0]}
-
+                            pos={[(index - (arr.length - 1) / 2) * gap,
+                            -cardverticalgap,
+                                0]}
+                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
@@ -1172,6 +1171,9 @@ export default function Exp() {
                         />
                     )
                 }
+
+
+
 
             </group>
 
