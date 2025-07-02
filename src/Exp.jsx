@@ -1,5 +1,5 @@
 import { Box, Edges, OrbitControls, Outlines, RoundedBoxGeometry, Text, useTexture } from '@react-three/drei'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { AdditiveBlending, Box3, Box3Helper, BoxGeometry, DoubleSide, Frustum, Matrix4, Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader, TOUCH, Vector2, Vector3 } from 'three';
 import { geometry, three, vector3 } from 'maath'
 import { extend, useFrame, useLoader, useThree } from '@react-three/fiber';
@@ -11,6 +11,7 @@ import img from '/1.jpg'
 import img1 from '/2.png'
 import { useMemo } from 'react';
 import { MeshStandardMaterial } from 'three';
+import { Group } from 'three';
 
 
 
@@ -695,7 +696,7 @@ export default function Exp() {
 
 
 
-    const helper = new Box3Helper()
+    // const helper = new Box3Helper()
 
 
     // const spacing = 5;
@@ -740,12 +741,69 @@ export default function Exp() {
 
 
 
-    const objects = [cardgroup1.current, cardgroup2.current];
-    objects.forEach(each => {
-        // scene.add(each)
-        // each.visible = false
-    })
-    const frustum = new Frustum();
+    // const objects = [cardgroup1.current, cardgroup2.current];
+    // objects.forEach(each => {
+    //     // scene.add(each)
+    //     // each.visible = false
+    // })
+    // const frustum = new Frustum();
+
+    const tileSize = total_width_ofgroup;
+    const tiles = [];
+
+    useEffect(() => {
+
+
+
+
+
+        // Create 9 tiles in a 3x3 grid
+        for (let i = -total_width_ofgroup / 8; i <= 0; i++) {
+            for (let j = -total_height_ofgroup / 2; j <= 0; j++) {
+                const g = cardgroup1.current.clone(true); // Or alternate between groupA and groupB
+                g.position.set(i * tileSize, j * tileSize, 0);
+                scene.add(g);
+                tiles.push(g);
+
+
+
+                // const tile = new Group()
+                // cardgroup1.current.children.forEach((child) => {
+                //     if (child.isMesh) {
+                //         const mesh = new Mesh(child.geometry, child.material)
+                //         mesh.position.copy(child.position)
+                //         mesh.rotation.copy(child.rotation)
+                //         tile.add(mesh)
+                //     }
+                // })
+
+                // tile.position.set(i * tileSize, j * tileSize, 0)
+                // scene.add(tile)
+                // tiles.push(tile)
+
+
+            }
+        }
+
+        function updateTiling() {
+            const baseX = Math.floor(cameraTarget.x / tileSize) * tileSize;
+            const baseZ = Math.floor(cameraTarget.z / tileSize) * tileSize;
+
+            let idx = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    tiles[idx].position.set(baseX + i * tileSize, 0, baseZ + j * tileSize);
+                    idx++;
+                }
+            }
+        }
+
+
+    }, [cardgroup1.current])
+
+
+
+
 
     return (
         <>
@@ -768,13 +826,26 @@ export default function Exp() {
             <OrbitControls
                 mouseButtons={{ LEFT: 2, RIGHT: 0 }}
                 touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_PAN }}
-                target={[7, 1, 0]}
+                target={[0, 1, 0]}
                 enableRotate={false}
                 // enableZoom={false}
                 // minDistance={1.4}
                 // maxDistance={2.5}
                 onChange={(e) => {
                     const current = e.target.target
+
+
+                    const baseX = Math.floor(current.x / tileSize) * tileSize;
+                    const baseY = Math.floor(current.y / tileSize) * tileSize;
+
+                    let idx = 0;
+                    for (let i = -total_width_ofgroup / 8; i <= 0; i++) {
+                        for (let j = -total_height_ofgroup / 2; j <= 0; j++) {
+                            tiles[idx].position.set(baseX + i * tileSize, baseY + j * tileSize, 0);
+                            idx++;
+                        }
+                    }
+
                     // playerPos.copy(current)
 
                     // updateMeshesAroundTarget(current)
@@ -794,23 +865,23 @@ export default function Exp() {
 
 
                     // Frustum setup
-                    const cameraViewProjectionMatrix = new Matrix4();
+                    // const cameraViewProjectionMatrix = new Matrix4();
 
-                    // In your animation loop or update function:
-                    camera.updateMatrixWorld(); // Must update camera matrix
-                    cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-                    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+                    // // In your animation loop or update function:
+                    // camera.updateMatrixWorld(); // Must update camera matrix
+                    // cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+                    // frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
 
-                    // Loop through objects and toggle visibility
-                    objects.forEach((obj, index) => {
-                        const box = new Box3().setFromObject(obj);
+                    // // Loop through objects and toggle visibility
+                    // objects.forEach((obj, index) => {
+                    //     const box = new Box3().setFromObject(obj);
 
-                        // console.log(obj);
+                    //     // console.log(obj);
 
-                        console.log(frustum.intersectsBox(box), index);
+                    //     console.log(frustum.intersectsBox(box), index);
 
-                        // obj.visible = frustum.intersectsObject(obj);
-                    });
+                    //     // obj.visible = frustum.intersectsObject(obj);
+                    // });
 
 
 
@@ -939,12 +1010,9 @@ export default function Exp() {
                 {
                     arr.map((each, index) =>
                         // console.log(each[0])
-
                         < Plane key={index}
-
-                            pos={[(index) * (gap) + 1, cardheight / 2 + total_height_ofgroup, 0]}
+                            pos={[(index - (arr.length - 1) / 2) * gap, total_height_ofgroup, 0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
-
                             img={each[0]}
                             heading={each[1]}
                             discription={each[2]}
@@ -952,13 +1020,52 @@ export default function Exp() {
                         />
                     )
                 }
+
+
+
+                {
+                    arr.map((each, index) =>
+                        // console.log(each[0])
+                        < Plane key={index}
+                            pos={[(index - (arr.length - 1) / 2) * gap,
+                                0,
+                                0]}
+                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            img={each[0]}
+                            heading={each[1]}
+                            discription={each[2]}
+                            link={each[3]}
+                        />
+                    )
+                }
+
+
+                {
+                    arr.map((each, index) =>
+                        // console.log(each[0])
+                        < Plane key={index}
+                            pos={[(index - (arr.length - 1) / 2) * gap,
+                            -total_height_ofgroup,
+                                0]}
+                            // pos={[(index - middle) * gap, cardheight / 2, 0]}
+                            img={each[0]}
+                            heading={each[1]}
+                            discription={each[2]}
+                            link={each[3]}
+                        />
+                    )
+                }
+
+
+
+
                 {/* </group> */}
 
 
 
 
                 {/* <group ref={cardgroup2}  > */}
-                {true &&
+                {/* {true &&
                     arr.map((each, index) =>
                         // console.log(each[0])
 
@@ -974,14 +1081,14 @@ export default function Exp() {
                             link={each[3]}
                         />
                     )
-                }
+                } */}
 
                 {/* </group> */}
 
 
 
                 {/* <group ref={cardgroup3} > */}
-                {true &&
+                {/* {true &&
                     arr.map((each, index) =>
                         // console.log(each[0])
 
@@ -996,14 +1103,14 @@ export default function Exp() {
                             link={each[3]}
                         />
                     )
-                }
+                } */}
 
             </group>
 
 
 
-            {/* <group ref={cardgroup2} > */}
-                <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} >
+            <group ref={cardgroup2} visible={false} >
+                {/* <group ref={cardgroup2} position={[total_width_ofgroup, 0, 0]} > */}
                 {
                     arr.map((each, index) =>
                         // console.log(each[0])

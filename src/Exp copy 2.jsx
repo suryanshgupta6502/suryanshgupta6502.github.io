@@ -752,9 +752,6 @@ export default function Exp() {
 
 
 
-
-
-
                     if (current.y > rangey_positive) {
                         cardgroups[currentcard.current].current.position.y = (box.max.y + ((cardheight + (gap / 4))))
                         rangey_negative = rangey_positive
@@ -767,6 +764,13 @@ export default function Exp() {
                         rangey_negative = (rangey_negative - (total_height_ofgroup * 2))
                     }
 
+
+                    // if (box.containsPoint(current)) {
+                    //     // const temp = cardgroups[currentcard.current].current.position
+                    //     // cardgroups[(currentcard.current + 1) % 2].current.position.copy(temp)
+
+
+                    // }
 
 
 
