@@ -902,6 +902,12 @@ export default function Exp() {
                         box0.setFromObject(cardgroupx.current)
                     }
                     else {
+                        // currentcard.current = 0
+
+                        // currentcard_inx.current = 0
+                        // currentcard_iny.current = 0
+                        // box.setFromObject(cardgroups[currentcard.current].current)
+                        // box0.setFromObject(cardgroup0.current)
                         // setTimeout(() => {
                         //     cardgroup0.current.position.copy(current)
                         //     console.log(cardgroup0.current);
@@ -989,7 +995,7 @@ export default function Exp() {
 
                             }
                             else {
-                                cardgroup_forx[(currentcard_inx.current + 1) % 2].current.position.x = (box0.min.x - (total_width_ofgroup / 1.97))
+                                cardgroup_forx[(currentcard_inx.current + 1) % 2].current.position.x = (box0.min.x - (total_width_ofgroup / 2))
                             }
 
 
@@ -1321,7 +1327,7 @@ export default function Exp() {
 
 
             {/* <group ref={cardgroup3} > */}
-            <group ref={cardgroupx} position={[total_width_ofgroup - (total_width_ofgroup / 4), 0, 0]}  >
+            <group ref={cardgroupx} position={[total_width_ofgroup - (total_width_ofgroup / 3.5), 0, 0]}  >
 
 
                 {
