@@ -819,6 +819,19 @@ export default function Exp() {
 
     const randomz = Math.random() * 5
 
+    const allbox = [box0, box1, box2]
+
+
+    const frustum = new Frustum()
+    const cameraViewProjectionMatrix = new Matrix4();
+
+    // 2. Update camera
+    // camera.updateMatrixWorld(); // Must call this before matrixWorldInverse is correct
+    // cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    // frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+    // frustum.setFromProjectionMatrix(camera.matrix)
+
 
     return (
         <>
@@ -842,6 +855,8 @@ export default function Exp() {
                 mouseButtons={{ LEFT: 2, RIGHT: 0 }}
                 touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_PAN }}
                 target={[0, 1, 0]}
+                dampingFactor={.025}
+
                 enableRotate={false}
                 // enableZoom={false}
                 // minDistance={1.4}
@@ -868,8 +883,8 @@ export default function Exp() {
 
                     // const boxhelper = new Box3Helper(box0)
                     // scene.add(boxhelper)
-
-                    console.log(box0, box0.containsPoint(current), current);
+                    // console.log(currentcard);
+                    // console.log(box0, box0.containsPoint(current), current);
 
 
                     if (box0.containsPoint(current)) {
@@ -893,7 +908,7 @@ export default function Exp() {
 
                     }
                     else if (box2.containsPoint(current)) {
-                        console.log("box 2 contina");
+                        // console.log("box 2 contina");
 
                         // currentcard.current = 2
                         currentcard_inx.current = 1
@@ -901,32 +916,81 @@ export default function Exp() {
                         // box.setFromObject(cardgroups[currentcard.current].current)
                         box0.setFromObject(cardgroupx.current)
                     }
-                    else {
-                        // currentcard.current = 0
+                    // else {
+                    // currentcard.current = 0
 
-                        // currentcard_inx.current = 0
-                        // currentcard_iny.current = 0
-                        // box.setFromObject(cardgroups[currentcard.current].current)
-                        // box0.setFromObject(cardgroup0.current)
-                        // setTimeout(() => {
-                        //     cardgroup0.current.position.copy(current)
-                        //     console.log(cardgroup0.current);
-                        // }, 500);
-                    }
+                    // currentcard_inx.current = 0
+                    // currentcard_iny.current = 0
+                    // box.setFromObject(cardgroups[currentcard.current].current)
+                    // box0.setFromObject(cardgroup0.current)
+                    // setTimeout(() => {
+                    //     cardgroup0.current.position.copy(current)
+                    //     console.log(cardgroup0.current);
+                    // }, 500);
+                    // }
+
+
+                    allbox.forEach(each => {
+                        camera.updateMatrixWorld()
+                        // console.log(each);
+                        // frustum.setFromProjectionMatrix(camera.matrix, camera.coordinateSystem)
+
+                        // frustum.intersectsBox
+                        // camera.updateMatrix()
+                        // camera.updateMatrixWorld()
+                        // camera.updateProjectionMatrix()
+                        // camera.updateMatrixWorld()
+                        // camera.updateWorldMatrix()
+                        // camera.updateMatrix()
+                        // cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+                        // frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+                        camera.updateMatrixWorld(); // Must call this before matrixWorldInverse is correct
+                        cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+                        frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+                        const res = frustum.intersectsBox(each)
+
+
+                        if (res) {
+                            console.log(each);
+                            const max = each.max
+                            const min = each.min
+
+                            const topleft = new Vector3(each.min.x, each.max.y, 0)
+                            const topright = each.max
+                            const bottomleft = each.min
+                            const bottomright = new Vector3(each.max.x, each.min.y, 0)
+
+                            frustum.containsPoint(topleft) && console.log("continae topleft");
+                            frustum.containsPoint(topright) && console.log("continae topright");
+                            frustum.containsPoint(bottomleft) && console.log("continae bottomleft");
+                            if (frustum.containsPoint(bottomright)) {
+                                console.log("continae bottomright");
+                                cardgroup0.current.position.x = (bottomright.x + gap)
+                            }
+
+
+
+
+                        }
+                    })
+
+
 
 
                     // console.log(box0, current);
 
 
                     // console.log(currentcard_inx.current);
-
+                    // camera.updateMatrixWorld();
                     // // console.log(cardgroups[currentcard.current].current,
                     // // currentcard.current);
                     // // helper.box.setFromObject(cardgroups[currentcard.current].current)
 
-                    if (true || box0.containsPoint(current)) {
+                    if (box0.containsPoint(current)) {
 
-                        console.log(box0);
+                        // console.log(box0);
                         // const boxXcenter = ((box1.min.x + box1.max.x) / 2)
                         const boxXcenter = ((box0.min.x + box0.max.x) / 2)
                         // const boxYcenter = ((box1.min.y + box1.max.y) / 2)
@@ -970,17 +1034,9 @@ export default function Exp() {
                                 cardgroup_forx[(currentcard_inx.current + 1) % 2].current.position.x = (box0.max.x + (total_width_ofgroup / 2))
                             }
 
-
-
-
-                            // currentcard_inx.current = 1
-
-                            // console.log((currentcard_inx.current + 1) % 2);
-
+                            // // extra
                             cardgroup_forx[(currentcard_inx.current + 1) % 2].current.position.y = ((box0.max.y + box0.min.y) / 2)
 
-                            // extra
-                            // cardgroup_fory[(currentcard_iny.current + 1) % 2].current.position.y = ((box0.max.y + box0.min.y) / 2)
 
                         }
                         else if (current.x < rangex_negative) {
@@ -1000,8 +1056,6 @@ export default function Exp() {
 
 
                             // extra
-                            // cardgroups[(currentcard.current + 1) % 2].current.position.y = ((box.max.y + box.min.y) / 2)
-
                             cardgroup_forx[(currentcard_inx.current + 1) % 2].current.position.y = ((box0.max.y + box0.min.y) / 2)
 
 
@@ -1021,9 +1075,8 @@ export default function Exp() {
 
 
                             // extra
-                            // cardgroup_forx[((currentcard_inx.current + 1) % 2)].current.position.y = ((box0.max.x + box0.min.x) / 2)
-
                             cardgroup_fory[(currentcard_iny.current + 1) % 2].current.position.x = ((box0.max.x + box0.min.x) / 2)
+
 
                             // cardgroups[(currentcard.current + 1) % 2].current.position.x = ((box0.max.x + box0.min.x) / 2)
 
@@ -1037,7 +1090,7 @@ export default function Exp() {
                             cardgroup_fory[((currentcard_iny.current + 1) % 2)].current.position.y = (box0.min.y - (total_height_ofgroup / 2))
 
 
-
+                            // extra
                             cardgroup_fory[(currentcard_iny.current + 1) % 2].current.position.x = ((box0.max.x + box0.min.x) / 2)
 
 
@@ -1054,6 +1107,32 @@ export default function Exp() {
 
 
 
+
+
+                    }
+                    else {
+                        // set frustum and chek if there is any object then find is max or min
+
+                        // cure
+
+                        // allbox.forEach(each => {
+                        //     camera.updateMatrixWorld()
+                        //     // console.log(each);
+                        //     frustum.setFromProjectionMatrix(camera.matrix, camera.coordinateSystem)
+
+                        //     // frustum.intersectsBox
+                        //     // camera.updateMatrix()
+                        //     // camera.updateMatrixWorld()
+                        //     camera.updateProjectionMatrix()
+                        //     camera.updateMatrixWorld()
+                        //     camera.updateWorldMatrix()
+                        //     camera.updateMatrix()
+                        //     // cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+                        //     // frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+                        //     const res = frustum.intersectsBox(each)
+                        //     console.log(res);
+                        // })
 
 
                     }
@@ -1186,7 +1265,8 @@ export default function Exp() {
                         // console.log(each[0])
                         < Plane key={index}
                             pos={[(index - (arr.length - 1) / 2) * gap,
-                                0, 0]}
+                                0,
+                                0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
@@ -1274,7 +1354,8 @@ export default function Exp() {
                     arr.map((each, index) =>
                         // console.log(each[0])
                         < Plane key={index}
-                            pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap, 0]}
+                            pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap,
+                                0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
@@ -1353,7 +1434,8 @@ export default function Exp() {
                         // console.log(each[0])
                         < Plane key={index}
                             // pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap, 0]}
-                            pos={[0, (index - (arr.length - 1) / 2) * cardverticalgap, 0]}
+                            pos={[0, (index - (arr.length - 1) / 2) * cardverticalgap,
+                                0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
@@ -1369,7 +1451,8 @@ export default function Exp() {
                         // console.log(each[0])
                         < Plane key={index}
                             // pos={[(index - (arr.length - 1) / 2) * gap, cardverticalgap, 0]}
-                            pos={[+gap, (index - (arr.length - 1) / 2) * cardverticalgap, 0]}
+                            pos={[+gap, (index - (arr.length - 1) / 2) * cardverticalgap,
+                                0]}
                             // pos={[(index - middle) * gap, cardheight / 2, 0]}
                             img={each[0]}
                             heading={each[1]}
