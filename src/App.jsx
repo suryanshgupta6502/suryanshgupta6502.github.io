@@ -1,15 +1,21 @@
 import { Canvas } from '@react-three/fiber'
-// import Exp from './Exp copy 2'
+import Test from './Test'
 import Exp from './Exp'
+import { OrbitControls } from '@react-three/drei'
+
 
 
 export default function App() {
     return (
-        <Canvas camera={{
-            position: [0, 1, 2]
-        }} >
-            <Exp />
+
+
+        <Canvas camera={{ position: [0, 1, 2] }} >
+            <OrbitControls />
+            {/* <Test /> */}
+            {/* <Test/> */}
+            {/* <Exp /> */}
             {/* <Exp /> */}
         </Canvas >
+
     )
 }
