@@ -1,14 +1,25 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
-    <script type="module" crossorigin src="/assets/index-H6-MeTZ-.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-PcCTkqOA.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+  <script type="module" crossorigin src="/assets/index-24NOIPmU.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-PcCTkqOA.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+
+    <div class="detail" style="position: absolute; top: 0; left: 0;"></div>
+
+    <script>
+        document.querySelector(".detail").innerHTML = `${(window.innerWidth / 1000)}, ${window.innerHeight}`
+    </script>
+
+</body>
+
 </html>
